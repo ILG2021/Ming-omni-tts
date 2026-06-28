@@ -10,14 +10,14 @@ def convert_ljspeech_to_jsonl(ljspeech_file, wavs_dir, output_file):
         
         # 使用 csv 模块来解析标准的 csv 文件，默认处理逗号分隔
         # 如果仍有特殊情况，用户可以在此调整 delimiter (比如 delimiter='|')
-        reader = csv.reader(infile)
+        reader = csv.reader(infile,delimiter='|')
         for row in reader:
             if not row:
                 continue
             
             if len(row) >= 2:
                 filename = row[0].strip()
-                text = row[-1].strip() 
+                text = row[1].strip() 
                 
                 audio_path = os.path.join(wavs_dir, filename)
                 
