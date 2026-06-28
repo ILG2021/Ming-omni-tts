@@ -29,6 +29,7 @@ def main():
         attn_implementation="sdpa", # Restored to SDPA since we added _supports_sdpa=True
         trust_remote_code=True
     )
+    model.tokenizer = tokenizer
     
     # We are doing full-parameter fine-tuning, so we do not freeze any parameters 
     # but some components like Audio VAE might not need training.
