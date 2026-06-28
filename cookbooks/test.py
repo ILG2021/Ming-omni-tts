@@ -67,8 +67,10 @@ class MingAudio:
         self.device = device
         self.model = BailingMMNativeForConditionalGeneration.from_pretrained(
             model_path,
-            torch_dtype=torch.bfloat16,
-            low_cpu_mem_usage=True,
+            device_map=device,
+            attn_implementation="sdpa",
+            torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
+            trust_remote_code=True
         )
         self.model = self.model.eval().to(torch.bfloat16).to(self.device)
 
