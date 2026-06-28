@@ -5,13 +5,15 @@ from modeling_bailingmm import BailingMMNativeForConditionalGeneration
 class BailingMMForFineTuning(BailingMMNativeForConditionalGeneration):
     _supports_sdpa = True
     
-    def forward(self, texts, waveforms, waveform_lengths, **kwargs):
+    def forward(self, texts, latents=None, frame_nums=None, waveforms=None, waveform_lengths=None, **kwargs):
         device = self.device
         bsz = len(texts)
         
-        # 1. Encode Waveforms to Latents
-        # Waveform shape: [B, max_len]
-        latents, frame_nums = self.audio.encode_latent(waveforms.to(device), waveform_lengths.to(device))
+        if latents is None or frame_nums is None:
+            raise ValueError("Precomputed 'latents' and 'frame_nums' are required for training. Please run preprocess_latents.py and use the updated dataset.")
+            
+        latents = latents.to(device)
+        frame_nums = frame_nums.to(device)
         
         patch_size = self.patch_size
         T_frame = latents.size(1)

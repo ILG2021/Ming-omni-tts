@@ -11,7 +11,6 @@ class MingOmniTTSDataset(Dataset):
             for line in f:
                 if line.strip():
                     self.data.append(json.loads(line))
-        self.target_sample_rate = target_sample_rate
 
     def __len__(self):
         return len(self.data)
@@ -19,38 +18,39 @@ class MingOmniTTSDataset(Dataset):
     def __getitem__(self, idx):
         item = self.data[idx]
         text = item.get("text", "")
-        audio_path = item.get("audio_path", "")
+        latent_path = item.get("latent_path")
+        frame_nums = item.get("frame_nums")
         
-        waveform, sr = torchaudio.load(audio_path)
-        if waveform.shape[0] > 1:
-            waveform = waveform.mean(dim=0, keepdim=True)
+        if latent_path is None or frame_nums is None:
+            raise ValueError(f"Missing 'latent_path' or 'frame_nums' in dataset item. Please run preprocess_latents.py first. Item: {item}")
             
-        if sr != self.target_sample_rate:
-            resampler = torchaudio.transforms.Resample(sr, self.target_sample_rate)
-            waveform = resampler(waveform)
-            
+        latents = torch.load(latent_path, map_location='cpu') # [T, D]
+        
         return {
             "text": text,
-            "waveform": waveform.squeeze(0)  # [T]
+            "latents": latents,
+            "frame_nums": frame_nums
         }
 
 class MingOmniTTSDataCollator:
     def __call__(self, batch):
         texts = [item["text"] for item in batch]
-        waveforms = [item["waveform"] for item in batch]
+        latents_list = [item["latents"] for item in batch]
+        frame_nums_list = [item["frame_nums"] for item in batch]
         
-        # Pad waveforms
-        lengths = [w.shape[0] for w in waveforms]
+        # Pad latents [T, D]
+        lengths = [l.shape[0] for l in latents_list]
         max_len = max(lengths)
+        dim = latents_list[0].shape[1]
         
-        padded_waveforms = torch.zeros((len(batch), max_len))
-        waveform_lengths = torch.tensor(lengths, dtype=torch.long)
+        padded_latents = torch.zeros((len(batch), max_len, dim), dtype=latents_list[0].dtype)
+        frame_nums = torch.tensor(frame_nums_list, dtype=torch.long)
         
-        for i, w in enumerate(waveforms):
-            padded_waveforms[i, :lengths[i]] = w
+        for i, l in enumerate(latents_list):
+            padded_latents[i, :lengths[i], :] = l
             
         return {
             "texts": texts,
-            "waveforms": padded_waveforms,
-            "waveform_lengths": waveform_lengths
+            "latents": padded_latents,
+            "frame_nums": frame_nums
         }

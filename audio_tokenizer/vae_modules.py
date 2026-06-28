@@ -72,6 +72,7 @@ class Encoder(nn.Module):
     def __init__(self, encoder_args, input_dim=320, hop_size=320, latent_dim=64, patch_size=-1):
         super().__init__()
         config = Qwen2Config.from_dict(config_dict=encoder_args)
+        config._attn_implementation = "sdpa"
         self.encoder = Qwen2Model(config)
         self.input_dim = input_dim
         self.hop_size = hop_size
@@ -132,6 +133,7 @@ class Decoder(nn.Module):
     def __init__(self, decoder_args, output_dim=320, latent_dim=64, semantic_model=None, patch_size=-1):
         super().__init__()
         config = Qwen2Config.from_dict(config_dict=decoder_args)
+        config._attn_implementation = "sdpa"
         self.decoder = Qwen2Model(config)
         self.output_dim = output_dim
         self.latent_dim = latent_dim

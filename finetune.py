@@ -60,7 +60,7 @@ def main():
         remove_unused_columns=False, # Important: prevent Trainer from removing our custom arguments
         dataloader_num_workers=0, # Changed to 0 for native Windows compatibility
         gradient_checkpointing=True, # Enables activation checkpointing to drastically save VRAM
-        report_to="none" # Or tensorboard/wandb
+        report_to="tensorboard" # Or tensorboard/wandb
     )
     
     trainer = Trainer(
