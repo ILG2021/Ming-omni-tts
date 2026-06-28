@@ -3,6 +3,8 @@ import torch.nn as nn
 from modeling_bailingmm import BailingMMNativeForConditionalGeneration
 
 class BailingMMForFineTuning(BailingMMNativeForConditionalGeneration):
+    _supports_sdpa = True
+    
     def forward(self, texts, waveforms, waveform_lengths, **kwargs):
         device = self.device
         bsz = len(texts)

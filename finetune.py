@@ -26,7 +26,7 @@ def main():
     model = BailingMMForFineTuning.from_pretrained(
         args.model_name_or_path,
         torch_dtype=torch.bfloat16,
-        attn_implementation="sdpa", # Force PyTorch native SDPA instead of flash-attn
+        attn_implementation="sdpa", # Restored to SDPA since we added _supports_sdpa=True
         trust_remote_code=True
     )
     

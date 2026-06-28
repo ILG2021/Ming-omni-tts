@@ -18,6 +18,7 @@ _CONFIG_FOR_DOC = "BailingMMConfig"
 
 
 class BailingMMNativeForConditionalGeneration(PreTrainedModel):
+    _supports_sdpa = True
     config_class = BailingMMConfig
     base_model_prefix = "model"
     supports_gradient_checkpointing = True
