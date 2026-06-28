@@ -58,7 +58,8 @@ def main():
         save_total_limit=3,
         bf16=True, # Recommended for A100/H100/RTX30xx/40xx
         remove_unused_columns=False, # Important: prevent Trainer from removing our custom arguments
-        dataloader_num_workers=4,
+        dataloader_num_workers=0, # Changed to 0 for native Windows compatibility
+        gradient_checkpointing=True, # Enables activation checkpointing to drastically save VRAM
         report_to="none" # Or tensorboard/wandb
     )
     
