@@ -104,7 +104,7 @@ class BailingMMForFineTuning(BailingMMNativeForConditionalGeneration):
                     history[t, :, :] = latents[i, start_idx:start_idx+self.history_patch_size, :]
                     
             cond = cond.unsqueeze(1) # [T_patch_i, 1, H]
-            mask = torch.ones(T_patch_i, 1, device=device)
+            mask = torch.ones(T_patch_i, patch_size, device=device)
             item_loss = self.flowloss(cond=cond, target=target, latent_history=history, mask=mask, patch_size=patch_size)
             loss += item_loss
             valid_items += 1
