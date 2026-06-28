@@ -96,8 +96,11 @@ class DiT(nn.Module):
         rope = self.rotary_embed.forward_from_seq_len(x.shape[1])
         
         if mask is not None:
+            # x = [y(1), x_history(history_len), x_now(patch_size)]
+            # mask must cover all tokens: 1 + history_len + patch_size
             mask_pad = mask.clone().detach()[:, :1].expand(-1, x_history.shape[1] + c.shape[1])
-            mask = torch.cat([mask_pad, mask], dim=-1)
+            mask_x_now = mask.clone().detach()[:, :1].expand(-1, x_now.shape[1])
+            mask = torch.cat([mask_pad, mask_x_now, mask], dim=-1)
         for block in self.blocks:
             x = block(x, mask, rope)
         x = self.final_layer(x)
