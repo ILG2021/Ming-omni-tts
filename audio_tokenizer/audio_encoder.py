@@ -5,15 +5,6 @@ from torch import Tensor, nn
 from torchtune.modules import RotaryPositionalEmbeddings
 from transformers.cache_utils import DynamicCache
 
-try:
-    from flash_attn import flash_attn_func
-except (ImportError, RuntimeError, OSError):
-    raise ImportError(
-        "Flash Attention is a required dependency but could not be imported.\n"
-        "Please check your installation and environment compatibility (e.g., CUDA version).\n"
-    )
-
-
 class LayerNorm(nn.LayerNorm):
     def forward(self, x: Tensor) -> Tensor:
         return super().forward(x.float()).type(x.dtype)

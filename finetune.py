@@ -1,7 +1,6 @@
 import os
 import argparse
-from transformers import TrainingArguments, Trainer, PreTrainedTokenizerFast
-from tokenization_bailing import BailingTokenizer
+from transformers import TrainingArguments, Trainer, AutoTokenizer
 from train_dataset import MingOmniTTSDataset, MingOmniTTSDataCollator
 from modeling_bailingmm_training import BailingMMForFineTuning
 import torch
@@ -20,7 +19,7 @@ def main():
     args = parser.parse_args()
 
     print(f"Loading tokenizer from {args.model_name_or_path}...")
-    tokenizer = BailingTokenizer.from_pretrained(args.model_name_or_path, trust_remote_code=True)
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path, trust_remote_code=True)
 
     print(f"Loading model from {args.model_name_or_path}...")
     # Load with bfloat16 to save memory and accelerate training
