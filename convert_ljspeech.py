@@ -19,7 +19,7 @@ def convert_ljspeech_to_jsonl(ljspeech_file, wavs_dir, output_file):
                 filename = row[0].strip()
                 text = row[1].strip() 
                 
-                audio_path = os.path.join(wavs_dir, filename)
+                audio_path = os.path.join(wavs_dir, filename).replace("\\", "/")
                 
                 json_obj = {
                     "text": text,
