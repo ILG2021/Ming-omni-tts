@@ -13,7 +13,7 @@
 </div>
 
 
-<p align="center">🌐<a href="https://xqacmer.github.io/Ming-omni-tts/">Project Page</a> ｜🤗 <a href="https://huggingface.co/inclusionAI/Ming-omni-tts-0.5B">Hugging Face</a>｜ 🤖 <a href="https://modelscope.cn/models/inclusionAI/Ming-omni-tts-0.5B">ModelScope</a> | 🎮 <a href="https://modelscope.cn/studios/antsipan/ming-uniaudio-demo">Gradio Demo-zh</a> | 🎮 <a href="https://huggingface.co/spaces/cafe3310/ming-uniaudio-demo-en">Gradio Demo-en</a> | 💬 <a href="https://qr.dingtalk.com/action/joingroup?code=v1,k1,O7MiZqrOrB2c7PnUZVBNvmDh/6tghNLMEtXqMteyRIpuRVJIwrSsXmL8oFqU5ajJ&_dt_no_comment=1&origin=11? ">DingTalk(钉钉)</a>
+<p align="center">🌐<a href="https://xqacmer.github.io/Ming-omni-tts/">Project Page</a> ｜🤗 <a href="https://huggingface.co/inclusionAI/Ming-omni-tts-0.5B">Hugging Face</a> | 🎮 <a href="https://huggingface.co/spaces/cafe3310/ming-uniaudio-demo-en">Gradio Demo-en</a>
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -1021,7 +1021,7 @@ Below is a comparison between Ming-omni-tts and other state-of-the-art (SOTA) mo
 
 ## Model & Benchmark Downloads
 
-You can download our latest model and Benchmark from both Huggingface and ModelScope.
+You can download our latest model and Benchmark from Hugging Face.
 
 <div align="center">
   <table style="width: 100%; max-width: 600px; margin: 16px 0;">
@@ -1038,22 +1038,19 @@ You can download our latest model and Benchmark from both Huggingface and ModelS
       <tr>
         <td style="padding: 8px; text-align: center;">Ming-omni-tts-tokenizer-12Hz</td>
         <td style="padding: 8px; text-align: center;">
-          <a href="https://huggingface.co/inclusionAI/Ming-omni-tts-tokenizer-12Hz">🤗 HuggingFace</a><br>
-          <a href="https://modelscope.cn/models/inclusionAI/Ming-omni-tts-tokenizer-12Hz">🤖 ModelScope</a>
+          <a href="https://huggingface.co/inclusionAI/Ming-omni-tts-tokenizer-12Hz">🤗 HuggingFace</a>
         </td>
       </tr>
       <tr>
         <td style="padding: 8px; text-align: center;">Ming-omni-tts-0.5B</td>
         <td style="padding: 8px; text-align: center;">
-          <a href="https://huggingface.co/inclusionAI/Ming-omni-tts-0.5B">🤗 HuggingFace</a><br>
-          <a href="https://modelscope.cn/models/inclusionAI/Ming-omni-tts-0.5B">🤖 ModelScope</a>
+          <a href="https://huggingface.co/inclusionAI/Ming-omni-tts-0.5B">🤗 HuggingFace</a>
         </td>
       </tr>
       <tr>
         <td style="padding: 8px; text-align: center;">Ming-omni-tts-16.8B-A3B</td>
         <td style="padding: 8px; text-align: center;">
-          <a href="https://huggingface.co/inclusionAI/Ming-omni-tts-16.8B-A3B">🤗 HuggingFace</a><br>
-          <a href="https://modelscope.cn/models/inclusionAI/Ming-omni-tts-16.8B-A3B">🤖 ModelScope</a>
+          <a href="https://huggingface.co/inclusionAI/Ming-omni-tts-16.8B-A3B">🤗 HuggingFace</a>
         </td>
       </tr>
     </tbody>
@@ -1062,15 +1059,6 @@ You can download our latest model and Benchmark from both Huggingface and ModelS
     <tr><td style="height: 1px; padding: 0; background: #000;"></td></tr>
   </table>
 </div>
-
-
- If you're in mainland China, we strongly recommend you to download our model from 🤖 <a href="https://modelscope.cn/models/inclusionAI/Ming-omni-tts-0.5B">ModelScope</a>.
-```
-pip install modelscope
-modelscope download --model inclusionAI/Ming-omni-tts-0.5B --local_dir inclusionAI/Ming-omni-tts-0.5B  --revision master
-```
-
-Note: This download process will take several minutes to several hours, depending on your network conditions.
 
 
 ## Environment Preparation

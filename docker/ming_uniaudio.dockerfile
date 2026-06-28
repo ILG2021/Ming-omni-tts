@@ -3,13 +3,9 @@ FROM pytorch/pytorch:2.6.0-cuda12.4-cudnn9-runtime
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Shanghai
 
-RUN sed -i 's|http://archive.ubuntu.com/ubuntu|https://mirrors.aliyun.com/ubuntu|g' /etc/apt/sources.list && \
-    sed -i 's|http://security.ubuntu.com/ubuntu|https://mirrors.aliyun.com/ubuntu|g' /etc/apt/sources.list && \
-    apt-get clean && \
-    apt-get update
+RUN apt-get update
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+RUN apt-get install -y --no-install-recommends \
         git \
         wget \
         vim \
@@ -17,14 +13,13 @@ RUN apt-get update && \
         build-essential \
         python3-dev \
         && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+        apt-get clean \
+        && rm -rf /var/lib/apt/lists/*
 
 RUN ln -s /usr/bin/python3.11 /usr/bin/python && \
     ln -s /usr/bin/pip3.11 /usr/bin/pip
 
 RUN pip install --no-cache-dir --upgrade pip
-RUN pip config set global.index-url https://pypi.mirrors.ustc.edu.cn/simple/
 
 RUN pip install --no-cache-dir \
     torch==2.6.0 \
