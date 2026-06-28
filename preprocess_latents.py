@@ -58,8 +58,8 @@ def main():
             waveform = waveform.squeeze(0).unsqueeze(0) 
             waveform_lengths = torch.tensor([waveform.shape[1]], dtype=torch.long)
             
-            # Note: the model natively casts inside, but we can safely pass float32 or bfloat16
-            waveform = waveform.to(device)
+            # We must convert to bfloat16 because the model was loaded in bfloat16
+            waveform = waveform.to(device).to(torch.bfloat16)
             waveform_lengths = waveform_lengths.to(device)
 
             latents, frame_nums = model.audio.encode_latent(waveform, waveform_lengths)
