@@ -69,7 +69,13 @@ class MultiHeadAttention(nn.Module):
         if past_key_values is not None:
             k, v = past_key_values.update(k, v, self.layer_idx, {"cache_position": cache_position})
 
-        a = flash_attn_func(q.permute(0, 2, 1, 3), k.permute(0, 2, 1, 3), v.permute(0, 2, 1, 3), causal=True)
+        # 用 PyTorch 原生 SDPA 替代 flash_attn_func，无需安装 flash_attn 包
+        # q/k/v shape: (B, T, nhead, dm) → SDPA 需要 (B, nhead, T, dm)
+        q_sdpa = q.permute(0, 2, 1, 3)
+        k_sdpa = k.permute(0, 2, 1, 3)
+        v_sdpa = v.permute(0, 2, 1, 3)
+        a = F.scaled_dot_product_attention(q_sdpa, k_sdpa, v_sdpa, is_causal=True)
+        a = a.permute(0, 2, 1, 3)  # 还原为 (B, T, nhead, dm)
         out = a.flatten(start_dim=2)
         qk = None
 
