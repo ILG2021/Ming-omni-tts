@@ -213,7 +213,8 @@ class MingAudio:
         )
         if output_wav_path is not None:
             output_dir = os.path.dirname(output_wav_path)
-            os.makedirs(output_dir, exist_ok=True)
+            if output_dir:  # 路径无目录部分时跳过，避免 makedirs("") 报 WinError 3
+                os.makedirs(output_dir, exist_ok=True)
             wav_np = waveform.squeeze(0).cpu().numpy() if waveform.ndim > 1 else waveform.cpu().numpy()
             sf.write(output_wav_path, wav_np.T if wav_np.ndim > 1 else wav_np, self.sample_rate)
         return waveform
