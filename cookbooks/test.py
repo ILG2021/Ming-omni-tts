@@ -6,6 +6,18 @@ import soundfile as sf
 from scipy.signal import resample_poly
 from math import gcd
 from transformers import AutoTokenizer
+import transformers.utils
+
+# 完全禁用 Flash Attention：无论模型 config 如何配置，均强制不可用
+# 避免未安装 flash_attn 时报错
+_flash_false = lambda *a, **kw: False
+transformers.utils.is_flash_attn_2_available = _flash_false
+transformers.utils.is_flash_attn_greater_or_equal_2_10 = _flash_false
+try:
+    import transformers.modeling_utils as _mu
+    _mu.is_flash_attn_2_available = _flash_false
+except Exception:
+    pass
 import os
 import sys
 import re
@@ -67,14 +79,16 @@ BASE_CAPTION_TEMPLATE = {
 class MingAudio:
     def __init__(self, model_path, device="cuda:0"):
         self.device = device
+        torch_dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
         self.model = BailingMMNativeForConditionalGeneration.from_pretrained(
             model_path,
             device_map=device,
-            attn_implementation="sdpa",
-            torch_dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
-            trust_remote_code=True
+            attn_implementation="eager",  # flash attention 已全局禁用，直接使用 eager
+            torch_dtype=torch_dtype,
+            trust_remote_code=True,
         )
-        self.model = self.model.eval().to(torch.bfloat16).to(self.device)
+        logger.info("模型加载成功 (eager 模式，已禁用 flash_attention)")
+        self.model = self.model.eval().to(torch_dtype).to(self.device)
 
         if self.model.model_type == 'dense':
             self.tokenizer = AutoTokenizer.from_pretrained(model_path)
