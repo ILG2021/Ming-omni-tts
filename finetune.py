@@ -18,9 +18,6 @@ def main():
     parser.add_argument("--save_steps", type=int, default=100, help="Save steps")
     args = parser.parse_args()
 
-    print(f"Loading tokenizer from {args.model_name_or_path}...")
-    tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path, trust_remote_code=True)
-
     print(f"Loading model from {args.model_name_or_path}...")
     # Load with bfloat16 to save memory and accelerate training
     model = BailingMMForFineTuning.from_pretrained(
@@ -29,6 +26,9 @@ def main():
         attn_implementation="sdpa", # Restored to SDPA since we added _supports_sdpa=True
         trust_remote_code=True
     )
+    
+    print(f"Loading tokenizer from {args.model_name_or_path}...")
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path, config=model.config, trust_remote_code=True)
     model.tokenizer = tokenizer
     
     # We are doing full-parameter fine-tuning, so we do not freeze any parameters 

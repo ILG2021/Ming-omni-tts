@@ -91,7 +91,7 @@ class MingAudio:
         self.model = self.model.eval().to(torch_dtype).to(self.device)
 
         if self.model.model_type == 'dense':
-            self.tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+            self.tokenizer = AutoTokenizer.from_pretrained(model_path, config=self.model.config, trust_remote_code=True)
         else:
             self.tokenizer = AutoTokenizer.from_pretrained(".", trust_remote_code=True)
         self.model.tokenizer = self.tokenizer
