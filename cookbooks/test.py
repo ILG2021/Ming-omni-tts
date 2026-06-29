@@ -2,7 +2,9 @@ import copy
 import json
 import warnings
 import torch
-import torchaudio
+import soundfile as sf
+from scipy.signal import resample_poly
+from math import gcd
 from transformers import AutoTokenizer
 import os
 import sys
@@ -135,13 +137,23 @@ class MingAudio:
         if waveform_path is None:
             return None, None
 
-        waveform, sr = torchaudio.load(waveform_path)
-        waveform1 = waveform.clone()
-        if sr != self.sample_rate:
-            waveform = torchaudio.transforms.Resample(orig_freq=sr, new_freq=self.sample_rate)(waveform)
+        audio_np, sr = sf.read(waveform_path, dtype='float32', always_2d=True)  # (samples, channels)
+        audio_np = audio_np.T  # → (channels, samples)
+
+        def _resample(arr_np, orig_sr, target_sr):
+            if orig_sr == target_sr:
+                return arr_np
+            g = gcd(orig_sr, target_sr)
+            up, down = target_sr // g, orig_sr // g
+            resampled = resample_poly(arr_np, up, down, axis=-1)
+            return resampled.astype('float32')
+
+        waveform_np = _resample(audio_np, sr, self.sample_rate)
+        waveform = torch.from_numpy(waveform_np)
 
         if use_spk_emb:
-            waveform1 = torchaudio.transforms.Resample(orig_freq=sr, new_freq=16000)(waveform1)
+            waveform1_np = _resample(audio_np, sr, 16000)
+            waveform1 = torch.from_numpy(waveform1_np)
             spk_emb = self.spkemb_extractor(waveform1)
         else:
             spk_emb = None
@@ -197,7 +209,8 @@ class MingAudio:
         if output_wav_path is not None:
             output_dir = os.path.dirname(output_wav_path)
             os.makedirs(output_dir, exist_ok=True)
-            torchaudio.save(output_wav_path, waveform, sample_rate=self.sample_rate)
+            wav_np = waveform.squeeze(0).cpu().numpy() if waveform.ndim > 1 else waveform.cpu().numpy()
+            sf.write(output_wav_path, wav_np.T if wav_np.ndim > 1 else wav_np, self.sample_rate)
         return waveform
 
     def generation(
