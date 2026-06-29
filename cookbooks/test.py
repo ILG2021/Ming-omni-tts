@@ -140,6 +140,11 @@ class MingAudio:
         audio_np, sr = sf.read(waveform_path, dtype='float32', always_2d=True)  # (samples, channels)
         audio_np = audio_np.T  # → (channels, samples)
 
+        # 多声道合并为单声道（取均值），模型只接受 (1, samples)
+        if audio_np.shape[0] > 1:
+            audio_np = audio_np.mean(axis=0, keepdims=True)
+
+
         def _resample(arr_np, orig_sr, target_sr):
             if orig_sr == target_sr:
                 return arr_np
