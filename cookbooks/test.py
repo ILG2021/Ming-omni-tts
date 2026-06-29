@@ -92,7 +92,7 @@ class MingAudio:
             default_config_path = "sentence_manager/default_config.yaml"
             config_file_path = default_config_path
 
-        with open(config_file_path, 'r') as f:
+        with open(config_file_path, 'r', encoding='utf-8') as f:
             self.sentence_manager_config = yaml.safe_load(f)
 
         if "split_token" not in self.sentence_manager_config:
