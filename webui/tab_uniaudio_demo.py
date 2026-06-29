@@ -3,6 +3,7 @@ import gzip
 import io
 import json
 import os
+import tempfile
 import time
 import uuid
 from typing import Any, Dict, List, Optional
@@ -519,7 +520,7 @@ class MingOmniTTSDemoTab:
         )
 
         try:
-            temp_output_path = f"output_{uuid.uuid4().hex[:8]}.wav"
+            temp_output_path = os.path.join(tempfile.gettempdir(), f"ming_tts_{uuid.uuid4().hex[:8]}.wav")
             if task_type == "TTS":
                 instruct_type, text, prompt_audio, caption_details = args
                 if not text:

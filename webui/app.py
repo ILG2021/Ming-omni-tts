@@ -66,28 +66,29 @@ class GradioInterface:
                 gr.Markdown("### 模型加载")
                 with gr.Row():
                     model_path_input = gr.Dropdown(
-                        choices=["inclusionAI/Ming-omni-tts-0.5B", "./finetuned_Ming_0.5B"], 
-                        value="inclusionAI/Ming-omni-tts-0.5B", 
+                        choices=["inclusionAI/Ming-omni-tts-0.5B", "./finetuned_Ming_0.5B"],
+                        value="inclusionAI/Ming-omni-tts-0.5B",
                         label="选择或输入模型路径",
                         allow_custom_value=True,
                         interactive=True
                     )
-                    load_status = gr.Textbox(label="模型加载状态", interactive=False, value="等待加载模型...")
-                    
-                    # 切换下拉框时自动加载
-                    model_path_input.change(
-                        fn=lambda path: [gr.update(value="⏳ 正在加载模型中，请稍候..."), path] if path else [gr.update(), path],
-                        inputs=[model_path_input],
-                        outputs=[load_status, gr.State()]
-                    ).then(
-                        fn=lambda path: self.service.load_model(path)[1],
+                    load_status = gr.Textbox(
+                        label="模型加载状态",
+                        interactive=False,
+                        value=self.service.get_status()
+                    )
+                    load_btn = gr.Button("重新加载模型", variant="secondary", scale=0)
+
+                    def _do_load(path):
+                        _, msg = self.service.load_model(path)
+                        return msg
+
+                    load_btn.click(
+                        fn=lambda path: "⏳ 正在加载模型中，请稍候...",
                         inputs=[model_path_input],
                         outputs=[load_status]
-                    )
-                    
-                    # 初始化页面时自动加载默认模型
-                    demo.load(
-                        fn=lambda path: self.service.load_model(path)[1],
+                    ).then(
+                        fn=_do_load,
                         inputs=[model_path_input],
                         outputs=[load_status]
                     )
@@ -107,9 +108,27 @@ class GradioInterface:
 
 # 主程序 ==============================================================
 if __name__ == "__main__":
-    # 初始化服务
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model", default="inclusionAI/Ming-omni-tts-0.5B", help="模型路径或HuggingFace ID")
+    parser.add_argument("--host", default="127.0.0.1")
+    parser.add_argument("--port", type=int, default=7860)
+    args = parser.parse_args()
+
+    # 同步加载模型（启动时完成，避免用户在未就绪时操作）
     local_service = LocalSpeechService()
+    logger.info(f"正在加载模型: {args.model}")
+    ok, msg = local_service.load_model(args.model)
+    if not ok:
+        logger.error(f"模型加载失败: {msg}")
+        logger.error("请检查模型路径或网络连接后重试")
+        exit(1)
+    logger.info(msg)
 
     # 创建并启动Gradio界面
     gradio_interface = GradioInterface(local_service)
-    gradio_interface.demo.queue(default_concurrency_limit=10).launch()
+    gradio_interface.demo.queue(default_concurrency_limit=10).launch(
+        server_name=args.host,
+        server_port=args.port,
+        share=False
+    )

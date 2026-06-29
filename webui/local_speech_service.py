@@ -52,7 +52,12 @@ class LocalSpeechService:
             self.model_path = None
             return False, f"加载模型失败: {e}"
             
+    def get_status(self) -> str:
+        if self.model is None:
+            return "⚠️ 模型未加载"
+        return f"✅ 已加载: {self.model_path}"
+
     def speech_generation(self, *args, **kwargs):
         if self.model is None:
-            raise RuntimeError("Model is not loaded. Please load a model first.")
+            raise RuntimeError("模型未加载，请先点击『重新加载模型』按鈕。")
         return self.model.speech_generation(*args, **kwargs)
