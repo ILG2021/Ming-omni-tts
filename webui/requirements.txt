@@ -1,0 +1,9 @@
+gradio==4.44.1
+loguru
+requests
+scipy
+setuptools
+python-dotenv
+watchfiles
+pydub
+pypinyin
