@@ -39,3 +39,9 @@ class BailingMMConfig(PretrainedConfig):
         self.ditar_config = ditar_config
         self.aggregator_config = aggregator_config
         super().__init__(**kwargs)
+
+    def to_dict(self):
+        output = super().to_dict()
+        # Prevent transformers from overwriting the instance's model_type with the class's model_type
+        output["model_type"] = self.model_type
+        return output

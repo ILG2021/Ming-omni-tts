@@ -83,15 +83,15 @@ class MingAudio:
         self.model = BailingMMNativeForConditionalGeneration.from_pretrained(
             model_path,
             device_map=device,
-            attn_implementation="eager",  # flash attention 已全局禁用，直接使用 eager
+            attn_implementation="sdpa",  # flash attention 已全局禁用，直接使用 eager
             torch_dtype=torch_dtype,
             trust_remote_code=True,
         )
-        logger.info("模型加载成功 (eager 模式，已禁用 flash_attention)")
+        logger.info("模型加载成功 (sdpa 模式，已禁用 flash_attention)")
         self.model = self.model.eval().to(torch_dtype).to(self.device)
 
         if self.model.model_type == 'dense':
-            self.tokenizer = AutoTokenizer.from_pretrained(model_path)
+            self.tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
         else:
             self.tokenizer = AutoTokenizer.from_pretrained(".", trust_remote_code=True)
         self.model.tokenizer = self.tokenizer
